@@ -1,0 +1,52 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.env
+*.venv
+venv/
+env/
+*.egg-info/
+
+# Docker
+# Ignore Docker-related files and artifacts
+**/Dockerfile
+**/.dockerignore
+docker-compose.yml
+docker-compose.override.yml
+.docker/
+
+# Kubernetes
+*.kube/
+.kube/
+
+# OS-specific files (Windows)
+Thumbs.db
+Desktop.ini
+*.bak
+*.swp
+*~
+$RECYCLE.BIN/
+
+# Virtual Environments
+*.env/
+venv/
+env/
+.venv/
+
+# Miscellaneous
+*.log
+*.tmp
+*.out
+
+# Coverage reports
+.coverage
+.coverage.*
+*.coverager
