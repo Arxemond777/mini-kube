@@ -56,7 +56,7 @@ kubectl apply -f services/ping/ping-deployment.yaml
 kubectl apply -f services/ping/ping-service.yaml  
 
 ### if needs to remove
-kubectl delete deployment ping-deployment
+kubectl delete deployment ping-deployment  
 kubectl delete deployment pong-deployment
 
 
