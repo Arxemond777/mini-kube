@@ -32,28 +32,28 @@ powerschell (troubleshooting for using locally built images in minikube) > minik
 
 or in my repo
 
-docker build -t pong-service .\services\pong\.
-docker tag pong-service:latest arxemond777/pong-service:latest
-docker push arxemond777/pong-service:latest
-kubectl apply -f services/pong/pong-deployment.yaml
+docker build -t pong-service .\services\pong\.  
+docker tag pong-service:latest arxemond777/pong-service:latest  
+docker push arxemond777/pong-service:latest  
+kubectl apply -f services/pong/pong-deployment.yaml  
 
-docker build -t ping-service .\services\ping
-docker tag ping-service:latest arxemond777/ping-service:latest
-docker push arxemond777/ping-service:latest
+docker build -t ping-service .\services\ping  
+docker tag ping-service:latest arxemond777/ping-service:latest  
+docker push arxemond777/ping-service:latest  
 
 # after restarting the PC
-1) minikube stop
-2) minikube delete
-3) minikube start --driver=docker --host-only-cidr "192.168.99.1/24"
-4) minikube dashboard
+1) minikube stop  
+2) minikube delete  
+3) minikube start --driver=docker --host-only-cidr "192.168.99.1/24"  
+4) minikube dashboard  
 
 
 ## ping-deployment.yaml & pong-deployment.yaml - are Kubernetes deployment YAML files
 ## ping-service.yaml & pong-service.yaml - for network detecting, load balancing, pod discovery
-kubectl apply -f services/pong/pong-deployment.yaml
-kubectl apply -f services/pong/pong-service.yaml
-kubectl apply -f services/ping/ping-deployment.yaml
-kubectl apply -f services/ping/ping-service.yaml
+kubectl apply -f services/pong/pong-deployment.yaml  
+kubectl apply -f services/pong/pong-service.yaml  
+kubectl apply -f services/ping/ping-deployment.yaml  
+kubectl apply -f services/ping/ping-service.yaml  
 
 ### if needs to remove
 kubectl delete deployment ping-deployment

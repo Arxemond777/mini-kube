@@ -13,7 +13,7 @@ def send_ping():
     while True:
         try:
             # Send a GET request to the pong service with the current ping ID
-            response = requests.get(f'http://localhost:5001/pong/{ping_id}')
+            response = requests.get(f'http://pong-service:5001/pong/{ping_id}')
             if response.status_code == 200:
                 print(f'Sent ping-{ping_id}, received:', response.json().get("message"))
                 ping_id += 1  # Increment the ID for the next ping
