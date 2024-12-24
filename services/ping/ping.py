@@ -31,4 +31,4 @@ def health_check():
 if __name__ == '__main__':
     # Start the ping-pong thread automatically
     threading.Thread(target=send_ping, daemon=True).start()
-    app.run(port=5000)  # Run ping on port 5000
+    app.run(host="0.0.0.0", port=5000)  # Run ping on port 5000
