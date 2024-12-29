@@ -1,0 +1,9 @@
+server:
+  config:
+    global:
+      scrape_interval: 2s
+    scrape_configs:
+      - job_name: 'flask-app'
+        metrics_path: '/metrics'
+        static_configs:
+          - targets: ['pong-service.myapp.svc.cluster.local:5001']

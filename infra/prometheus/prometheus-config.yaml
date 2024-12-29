@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: monitoring
+data:
+  prometheus.yml: |
+    scrape_configs:
+      - job_name: 'pong-service'
+        scrape_interval: 2s
+        metrics_path: '/metrics'
+        static_configs:
+          - targets: ['pong-service.myapp.svc.cluster.local:5001']

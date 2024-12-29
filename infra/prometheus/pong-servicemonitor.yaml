@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pong-service-servicemonitor
+  namespace: prometheus
+  labels:
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: pong-service
+  endpoints:
+    - port: metrics
+      interval: 10s

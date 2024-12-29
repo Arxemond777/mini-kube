@@ -1,0 +1,25 @@
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      templates:
+        - condition:
+            equals:
+              kubernetes.namespace: myapp  # Target the "myapp" namespace
+          config:
+            - type: container
+              paths:
+                - "/var/lib/docker/containers/${data.docker.container.id}/*.log"  # Collect logs from stdout/stderr
+
+processors:
+  - add_kubernetes_metadata:
+      host: ${NODE_NAME}
+      matchers:
+        - logs_path:
+            logs_path: "/var/lib/docker/containers/"  # Add Kubernetes metadata to logs
+  - decode_json_fields:
+      fields: ["message"]  # Decode JSON if the log messages are in JSON format
+      target: ""  # Replace the original log message
+      overwrite_keys: true  # Overwrite existing fields with decoded values
+
+output.elasticsearch:
+  hosts: ["elasticsearch-master:9200"]  # Elasticsearch service for output

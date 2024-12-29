@@ -23,9 +23,10 @@ if ($oldPath.Split(';') -inotcontains 'C:\minikube'){
 
 # run minikube
 docker context use default
-minikube start --driver=docker
+minikube start --driver=docker --cpus=4 --memory=16g; minikube addons enable storage-provisioner; minikube addons enable default-storageclass
 minikube status
-minikube dashboard
+
+minikube addons enable metrics-server; minikube dashboard
 
 # build artifacts (for publishing read how to publish them in artifactory)
 powerschell (troubleshooting for using locally built images in minikube) > minikube -p minikube docker-env | Invoke-Expression
@@ -37,8 +38,8 @@ docker tag pong-service:latest arxemond777/pong-service:latest
 docker push arxemond777/pong-service:latest  
 kubectl apply -f services/pong/pong-deployment.yaml  
 
-docker build -t ping-service .\services\ping  
-docker tag ping-service:latest arxemond777/ping-service:latest  
+docker build -t ping-service .\services\ping;  
+docker tag ping-service:latest arxemond777/ping-service:latest;  
 docker push arxemond777/ping-service:latest  
 
 # after restarting the PC
@@ -47,19 +48,52 @@ docker push arxemond777/ping-service:latest
 3) minikube start --driver=docker --host-only-cidr "192.168.99.1/24"  
 4) minikube dashboard  
 
+# setup logs (filebeat > elasticsearch > kibana)
+![img.png](img.png)
+0) install helm  
+1) helm repo add elastic https://helm.elastic.co  
+   helm repo update    
+2) installing elasticsearch and port-forward  
+helm install elasticsearch elastic/elasticsearch  -f infra/elk/elasticsearch-values.yaml --namespace=elk  --create-namespace --wait  
+kubectl port-forward service/elasticsearch-master 9200  --namespace=elk
+
+use 127.0.0.1:9200/ (pay attention to http://localhost:9200/ must be http not httpS in your browser)
+and login in it
+the login is "elastic"  
+extract the pass "kubectl get secret elasticsearch-master-credentials -o go-template='{{.data.password | base64decode}}' -n elk"
+or "PASSWORD=$(kubectl get secret elasticsearch-master-credentials -o go-template='{{.data.password | base64decode}}' -n elk')"
+
+### create am index for elasticsearch
+http://localhost:5601/app/home#/ > search > data views > create data view >   
+name - any_name  
+indexPattern - filebeat-*
+
+3) installing filebeat and kibana
+
+helm install kibana elastic/kibana --namespace=elk --wait
+kubectl port-forward deployment/kibana-kibana 5601 --namespace=elk
+
+use 127.0.0.1:5601/login?next=%2F (attention: pay attention to http://localhost:5601/login?next=%2F must be http not httpS in your browser
+the pass for logging in kibana is the same
+
+helm install filebeat elastic/filebeat --namespace=elk -f infra/elk/filebeat.yaml --wait
 
 ## ping-deployment.yaml & pong-deployment.yaml - are Kubernetes deployment YAML files
 ## ping-service.yaml & pong-service.yaml - for network detecting, load balancing, pod discovery
-kubectl apply -f services/pong/pong-deployment.yaml  
-kubectl apply -f services/pong/pong-service.yaml  
-kubectl apply -f services/ping/ping-deployment.yaml  
-kubectl apply -f services/ping/ping-service.yaml  
+## todo use .\redeploy-ping-pong.bat
 
 ### if needs to remove
 kubectl delete deployment ping-deployment  
 kubectl delete deployment pong-deployment
 
-
+### curling inside of kuber
+kubectl delete pod curlpod --namespace=myapp
+kubectl run curlpod --image=curlimages/curl --restart=Never --namespace=myapp -- sleep infinity
+kubectl exec -it curlpod --namespace=myapp -- /bin/sh  
+curl http://ping-service:5000/health  
+curl http://pong-service:5001/health  
+curl http://pong-service:5001/metrics  
+curl http://pong-service.myapp.svc.cluster.local:5001/metrics  
 
 
 # trash delete later
